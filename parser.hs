@@ -32,12 +32,19 @@ module Bus (
       (<$>), (<$),
 
       -- Applicative
-      -- pure, (<*>), (<*), (*>),
+      pure, (<*>), (<*), (*>),
+
+      -- Alternative
+      empty, (<|>), some, many,
+
+      -- Monad
+      return, (>>=), char, oneOf, noneOf, string, whitespace, number,
+
 ) where
 
-import Prelude hiding ((<$), (<$>))
+import Prelude hiding ((<$), (<$>), (<*), (*>))
 import Control.Monad
-import Control.Applicative hiding ((<$), (<$>), many, some)
+import Control.Applicative hiding ((<$), (<$>), many, some, (<*), (*>))
 
 -- We consider a parser to take in an input string and return parsed output
 newtype Parser a = Parser{ parse::String -> [ (String, a) ] }
@@ -99,3 +106,41 @@ instance Monad Parser where
 
       -- (>>=) :: Parser a -> (a -> Parser b) -> Parser b
       (Parser px) >>= f = Parser(\s -> concat [parse (f x) ss | (ss, x) <- px s])
+
+-- Derived combi
+digitToInt10 :: Char -> Int
+digitToInt10 '0' = 0
+digitToInt10 '1' = 1
+digitToInt10 '2' = 2
+digitToInt10 '3' = 3
+digitToInt10 '4' = 4
+digitToInt10 '5' = 5
+digitToInt10 '6' = 6
+digitToInt10 '7' = 7
+digitToInt10 '8' = 8
+digitToInt10 '9' = 9
+
+satisfy :: (Char -> Bool) -> Parser Char
+satisfy p = item >>= (\t -> if p t then pure t else empty)
+
+oneOf :: [Char] -> Parser Char
+oneOf = satisfy . flip elem
+
+noneOf :: [Char] -> Parser Char
+noneOf cs = satisfy ( not.flip elem cs)
+
+char :: Char -> Parser Char
+char c = item >>= \c' -> if c == c' then pure c else empty
+
+string :: String -> Parser String
+string [] = return ""
+string (c:cs) = char c <:> string cs
+
+whitespace :: Parser ()
+whitespace = many (oneOf " \n\t") *> pure ()
+
+number :: Parser Int
+number = (some (oneOf ['0'..'9']) >>= return.read ) <* whitespace
+
+tokenise :: String -> Parser String
+tokenise s = string s <* whitespace
