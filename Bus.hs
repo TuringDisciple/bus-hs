@@ -92,8 +92,8 @@ instance Alternative Parser where
       Parser px <|> Parser py = Parser (\s -> (px s) ++ (py s))
 
 -- Derived combi
-(<:>) :: Alternative f => f a -> f [a] -> f [a]
-x <:> xs = (:) <$> x <*> xs
+-- (<:>) :: Alternative f => f a -> f [a] -> f [a]
+-- x <:> xs = (:) <$> x <*> xs
 
 -- some :: Alternative f => f a -> f [a]
 -- some px = px <:> many px
@@ -101,7 +101,7 @@ x <:> xs = (:) <$> x <*> xs
 -- many :: Alternative f => f a -> f [a]
 -- many px = some px <|> empty
 
--- A monade allows us to chain, and therefore encapsulates a modifiable state
+-- A monad allows us to chain, and therefore encapsulates a modifiable state
 instance Monad Parser where
       -- return :: a -> Parser a
       return = pure
@@ -110,17 +110,6 @@ instance Monad Parser where
       (Parser px) >>= f = Parser(\s -> concat [parse (f x) ss | (ss, x) <- px s])
 
 -- Derived combi
-digitToInt10 :: Char -> Int
-digitToInt10 '0' = 0
-digitToInt10 '1' = 1
-digitToInt10 '2' = 2
-digitToInt10 '3' = 3
-digitToInt10 '4' = 4
-digitToInt10 '5' = 5
-digitToInt10 '6' = 6
-digitToInt10 '7' = 7
-digitToInt10 '8' = 8
-digitToInt10 '9' = 9
 
 satisfy :: (Char -> Bool) -> Parser Char
 satisfy p = item >>= (\t -> if p t then pure t else empty)
