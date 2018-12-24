@@ -40,6 +40,9 @@ module Bus (
       -- Monad
       return, (>>=), char, oneOf, noneOf, string, whitespace, number,
 
+      -- Others
+      tokenise,
+
 ) where
 
 import Prelude hiding ((<$), (<$>), (<*), (*>))
@@ -52,14 +55,13 @@ newtype Parser a = Parser{ parse::String -> [ (String, a) ] }
 -- A parser that attempts to get a character from the input stream
 item :: Parser Char
 item = Parser(
-      \s -> case s of
-            [] -> []
-            (s':ss) -> [ (ss, s') ]
-      )
+            \s -> case s of
+                  [] -> []
+                  (s':s) -> [ (s, s') ])
 -- A functor allows us to modify a type that wrapped in a contex
 instance Functor Parser where
       -- fmap :: (a -> b) -> Parser a -> Parser b
-      fmap f (Parser px) = Parser (\s -> [(ss, (f x)) | (ss, x) <- px s])
+      fmap f (Parser px) = Parser (\s -> [(ss, f x) | (ss, x) <- px s])
 
 -- Derived combi
 (<$>) :: Functor f => (a -> b) -> f a -> f b
@@ -137,10 +139,10 @@ string [] = return ""
 string (c:cs) = char c <:> string cs
 
 whitespace :: Parser ()
-whitespace = many (oneOf " \n\t") *> pure ()
+whitespace = many (oneOf " \t") *> pure ()
 
 number :: Parser Int
-number = (some (oneOf ['0'..'9']) >>= return.read ) <* whitespace
+number = (some (oneOf ['0' .. '9']) >>= return.read)
 
 tokenise :: String -> Parser String
 tokenise s = string s <* whitespace
