@@ -12,11 +12,11 @@ data Term = Term Int deriving (Show)
 data Expr = Expr Parity Term [Expr] deriving (Show)
 
 parity :: Parser Parity
-parity =  ((:+:) <$ char '+' )
-      <|> ((:-:) <$ char  '-')
+parity =  ((:+:) <$ char '+' <* whitespace )
+      <|> ((:-:) <$ char  '-' <* whitespace)
 
 term :: Parser Term
-term = Term <$> number
+term = Term <$> number <* whitespace
 
 expr :: Parser Expr
-expr = Expr <$> parity <*> term <*> many expr
+expr = Expr <$> parity <*> term <*> many expr <* whitespace

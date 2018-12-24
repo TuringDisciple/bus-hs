@@ -45,9 +45,9 @@ module Bus (
 
 ) where
 
-import Prelude hiding ((<$), (<$>), (<*), (*>))
+import Prelude
 import Control.Monad
-import Control.Applicative hiding ((<$), (<$>), many, some, (<*), (*>))
+import Control.Applicative
 
 -- We consider a parser to take in an input string and return parsed output
 newtype Parser a = Parser{ parse::String -> [ (String, a) ] }
@@ -64,10 +64,10 @@ instance Functor Parser where
       fmap f (Parser px) = Parser (\s -> [(ss, f x) | (ss, x) <- px s])
 
 -- Derived combi
-(<$>) :: Functor f => (a -> b) -> f a -> f b
-(<$>) = fmap
-(<$) :: Functor f => a -> f b -> f a
-(<$) = fmap.const
+-- (<$>) :: Functor f => (a -> b) -> f a -> f b
+-- (<$>) = fmap
+-- (<$) :: Functor f => a -> f b -> f a
+-- (<$) = fmap.const
 
 -- An applicative encapsulates the concept of applying a wrapped function to wrapped context
 instance Applicative Parser where
@@ -78,10 +78,10 @@ instance Applicative Parser where
             [ (sss, f x)| (ss, f) <- pf s, (sss, x) <- px ss])
 
 -- Derived combi
-(<*) :: Applicative f => f a -> f b -> f a
-px <* py = const <$> px <*> py
-(*>) :: Applicative f => f a -> f b -> f b
-px *> py = id <$ px <*> py
+-- (<*) :: Applicative f => f a -> f b -> f a
+-- px <* py = const <$> px <*> py
+-- (*>) :: Applicative f => f a -> f b -> f b
+-- px *> py = id <$ px <*> py
 
 -- An alternative represents the idea of having multiple parses
 instance Alternative Parser where
@@ -95,11 +95,11 @@ instance Alternative Parser where
 (<:>) :: Alternative f => f a -> f [a] -> f [a]
 x <:> xs = (:) <$> x <*> xs
 
-some :: Alternative f => f a -> f [a]
-some px = px <:> many px
-
-many :: Alternative f => f a -> f [a]
-many px = some px <|> empty
+-- some :: Alternative f => f a -> f [a]
+-- some px = px <:> many px
+--
+-- many :: Alternative f => f a -> f [a]
+-- many px = some px <|> empty
 
 -- A monade allows us to chain, and therefore encapsulates a modifiable state
 instance Monad Parser where
@@ -142,7 +142,7 @@ whitespace :: Parser ()
 whitespace = many (oneOf " \t") *> pure ()
 
 number :: Parser Int
-number = (some (oneOf ['0' .. '9']) >>= return.read)
+number = (some (oneOf ['0' .. '9']) >>= return.read) <* whitespace
 
 tokenise :: String -> Parser String
 tokenise s = string s <* whitespace
