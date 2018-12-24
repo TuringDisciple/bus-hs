@@ -92,8 +92,8 @@ instance Alternative Parser where
       Parser px <|> Parser py = Parser (\s -> (px s) ++ (py s))
 
 -- Derived combi
--- (<:>) :: Alternative f => f a -> f [a] -> f [a]
--- x <:> xs = (:) <$> x <*> xs
+(<:>) :: Alternative f => f a -> f [a] -> f [a]
+x <:> xs = (:) <$> x <*> xs
 
 -- some :: Alternative f => f a -> f [a]
 -- some px = px <:> many px

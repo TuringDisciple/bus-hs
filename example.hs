@@ -1,5 +1,5 @@
 import Bus
-import Prelude hiding
+import Prelude 
 
 {-
       We define a parser for a simple grammar below
