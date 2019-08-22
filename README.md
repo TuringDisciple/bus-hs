@@ -22,7 +22,7 @@
                               ~~                       ~~                       \/____/
 
                                                A parser library
-                                     Author:Nashe Mncube/TuringDisciple
+                                     Author:Nashe Mncube/nashpotato
 
 ### Introduction
 BUS is a fully functional parser combinator library written in a Haskell. It exists not to replace current parser libraries, but rather to act as a toy parser library for the curious and learning. Relatively small, bus uses advanced concepts in functional programming, which are easily accessible to a learner of functional languages who may not know these concepts, or may want to see these concepts in action.
